@@ -1,0 +1,103 @@
+﻿<main class="container catalogo py-4 py-md-5">
+  <header class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div>
+      <p class="eyebrow mb-2">ADMINISTRACIÓN · CLIENTES</p>
+      <h1 class="fw-bold mb-2">CATÁLOGO DE CLIENTES</h1>
+      <p class="text-secondary mb-0">Organiza tus contactos y mantén su información al día.</p>
+    </div>
+    <span class="badge rounded-pill contador">{{ clientes().length }} registros</span>
+  </header>
+
+  @if (mensaje()) {
+    <div class="alert alert-primary d-flex align-items-center gap-2" role="status">
+      @if (ocupado()) { <span class="spinner-border spinner-border-sm" aria-hidden="true"></span> }
+      {{ mensaje() }}
+    </div>
+  }
+
+  <div class="row g-4 align-items-start">
+    <section class="col-12 col-lg-5" aria-labelledby="titulo-formulario">
+      <div class="card panel">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+            <h2 id="titulo-formulario" class="h5 fw-bold mb-0">{{ seleccionada() === null ? 'Nuevo cliente' : 'Editar cliente' }}</h2>
+            <span class="badge text-bg-light border">{{ seleccionada() === null ? 'Alta' : 'Edición' }}</span>
+          </div>
+          <p class="small text-secondary mb-4">Completa los datos y guarda los cambios.</p>
+          <form #form="ngForm" (ngSubmit)="guardar()">
+            <fieldset class="border-0 p-0 m-0" [disabled]="ocupado() || !cargado()">
+              <div class="mb-3">
+                <label class="form-label" for="clave">Clave del cliente</label>
+                <input id="clave" name="clave" class="form-control" [(ngModel)]="cliente.clave" required maxlength="30" [readOnly]="seleccionada() !== null" placeholder="Ej. CLI001" aria-describedby="ayuda-clave" />
+                <div id="ayuda-clave" class="form-text">Identificador único del cliente.</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="nombre">Nombre completo</label>
+                <input id="nombre" name="nombre" class="form-control" [(ngModel)]="cliente.nombre" required maxlength="200" placeholder="Escribe el nombre" autocomplete="name" />
+              </div>
+              <div class="row g-3 mb-4">
+                <div class="col-12 col-sm-8">
+                  <label class="form-label" for="fecha">Fecha de nacimiento</label>
+                  <input id="fecha" name="fecha" class="form-control" type="date" [(ngModel)]="cliente.fechaNacimiento" required [max]="hoy" />
+                </div>
+                <div class="col-12 col-sm-4">
+                  <label class="form-label" for="edad">Edad</label>
+                  <div class="input-group">
+                    <input id="edad" name="edad" class="form-control" [value]="edad() ?? ''" readonly aria-label="Edad calculada a partir de la fecha de nacimiento" />
+                    <span class="input-group-text small">años</span>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+            <div class="d-flex flex-wrap gap-2 border-top pt-3">
+              <button class="btn btn-primary flex-grow-1" type="submit" [disabled]="ocupado() || !cargado()">{{ ocupado() ? 'Procesando…' : 'Guardar cliente' }}</button>
+              <button class="btn btn-outline-secondary" type="button" [disabled]="ocupado() || !cargado()" (click)="nuevo(); form.resetForm(cliente)">Nuevo</button>
+              <button class="btn btn-outline-danger" type="button" [disabled]="seleccionada() === null || ocupado()" (click)="confirmando.set(true)">Eliminar</button>
+            </div>
+          </form>
+          @if (confirmando()) {
+            <div class="alert alert-danger mt-4 mb-0" role="group" aria-label="Confirmar eliminación">
+              <p class="fw-semibold mb-1">¿Eliminar a {{ cliente.nombre }}?</p>
+              <p class="small mb-3">Esta acción no se puede deshacer.</p>
+              <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-danger btn-sm" type="button" [disabled]="ocupado()" (click)="eliminar()">Sí, eliminar</button>
+                <button class="btn btn-outline-secondary btn-sm" type="button" [disabled]="ocupado()" (click)="confirmando.set(false)">Cancelar</button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="col-12 col-lg-7" aria-labelledby="titulo-listado">
+      <div class="card panel overflow-hidden">
+        <div class="card-body p-4 border-bottom">
+          <h2 id="titulo-listado" class="h5 fw-bold mb-2">Directorio de clientes</h2>
+          <p class="small text-secondary mb-0">Selecciona un cliente para consultar o editar sus datos.</p>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0" aria-label="Catálogo de clientes" [attr.aria-busy]="ocupado()">
+            <thead><tr><th scope="col">Clave</th><th scope="col">Nombre</th></tr></thead>
+            <tbody>
+              @for (registro of clientes(); track registro.clave) {
+                <tr [class.seleccionado]="seleccionada() === registro.clave" (click)="seleccionar(registro)">
+                  <td><button type="button" class="seleccionar" [disabled]="ocupado()" (click)="seleccionar(registro); $event.stopPropagation()" [attr.aria-label]="'Editar cliente ' + registro.clave + ', ' + registro.nombre" [attr.aria-pressed]="seleccionada() === registro.clave">{{ registro.clave }}</button></td>
+                  <td class="fw-medium">{{ registro.nombre }}</td>
+                </tr>
+              } @empty {
+                <tr><td colspan="2" class="text-center text-secondary py-5 px-4">
+                  @if (ocupado()) { <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span> }
+                  {{ ocupado() ? 'Cargando clientes…' : cargado() ? 'Tu directorio está listo para comenzar. Agrega tu primer cliente.' : 'No se pudieron cargar los clientes.' }}
+                </td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer bg-white px-4 py-3 small text-secondary">
+          {{ ocupado() ? 'Actualizando información…' : 'Los cambios se guardan al pulsar Guardar cliente.' }}
+          @if (!cargado() && !ocupado()) { <button class="btn btn-outline-primary btn-sm mt-2 d-block" type="button" (click)="cargar()">Reintentar conexión</button> }
+        </div>
+      </div>
+    </section>
+  </div>
+</main>

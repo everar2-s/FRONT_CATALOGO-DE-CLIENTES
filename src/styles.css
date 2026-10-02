@@ -1,0 +1,4 @@
+﻿@import 'bootstrap/dist/css/bootstrap.min.css';
+
+:root { color-scheme: light; }
+body { margin: 0; background: #f4f6fa; color: #243247; font-family: 'Segoe UI', system-ui, sans-serif; }
