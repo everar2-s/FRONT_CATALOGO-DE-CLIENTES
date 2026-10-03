@@ -1,7 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 
-export interface Cliente { clave: string; nombre: string; fechaNacimiento: string; }
-interface FilaCliente { Cli_Id: string; Cli_Nombre: string; Cli_FechaNa: string | null; Cli_Edad: number | null; }
+import { Cliente, FilaCliente } from './interfaces';
 
 @Injectable({ providedIn: 'root' })
 export class ClientesService {

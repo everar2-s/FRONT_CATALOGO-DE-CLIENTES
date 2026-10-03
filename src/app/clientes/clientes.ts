@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Cliente, ClientesService } from './clientes.service';
+import { ClientesService } from './clientes.service';
+import { Cliente } from './interfaces';
 
 @Component({ selector: 'app-clientes', imports: [FormsModule], templateUrl: './clientes.html', styleUrl: './clientes.css' })
 export class Clientes implements OnInit {
