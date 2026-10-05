@@ -28,7 +28,7 @@
             <fieldset class="border-0 p-0 m-0" [disabled]="ocupado() || !cargado()">
               <div class="mb-3">
                 <label class="form-label" for="clave">Clave del cliente</label>
-                <input id="clave" name="clave" class="form-control" [(ngModel)]="cliente.clave" required maxlength="30" [readOnly]="seleccionada() !== null" placeholder="Ej. CLI001" aria-describedby="ayuda-clave" />
+                <input id="clave" name="clave" class="form-control" [(ngModel)]="cliente.clave" (change)="buscarClave()" required maxlength="30" [readOnly]="seleccionada() !== null" placeholder="Ej. CLI001" aria-describedby="ayuda-clave" />
                 <div id="ayuda-clave" class="form-text">Identificador único del cliente.</div>
               </div>
               <div class="mb-3">

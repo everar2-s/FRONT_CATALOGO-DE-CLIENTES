@@ -49,6 +49,20 @@ export class Clientes implements OnInit {
     this.confirmando.set(false);
     this.mensaje.set('');
   }
+  buscarClave(): void {
+    if (this.seleccionada() !== null || this.ocupado()) return;
+    const clave = this.cliente.clave.trim();
+    if (!clave) return;
+    const existente = this.clientes().find(cliente => cliente.clave === clave);
+    if (existente) {
+      this.cliente = { ...existente };
+      this.seleccionada.set(existente.clave);
+      this.mensaje.set('Ya existe un cliente con esa clave. Se cargaron sus datos para editar.');
+    } else {
+      this.cliente = { ...this.cliente, nombre: '', fechaNacimiento: '' };
+      this.mensaje.set('Clave disponible. Continúa capturando los datos del cliente.');
+    }
+  }
   async guardar(): Promise<void> {
     if (this.ocupado() || !this.cargado()) return;
     const registro = { ...this.cliente, clave: this.cliente.clave.trim(), nombre: this.cliente.nombre.trim() };

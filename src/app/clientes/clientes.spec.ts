@@ -57,4 +57,18 @@ describe('Clientes', () => {
     await app.guardar();
     expect(servicio.guardar).not.toHaveBeenCalled();
   });
+  it('loads an existing customer when its key is entered and leaves new keys ready for capture', async () => {
+    const app = TestBed.createComponent(Clientes).componentInstance;
+    await app.cargar();
+    app.cliente.clave = existente.clave;
+    app.buscarClave();
+    expect(app.cliente).toEqual(existente);
+    expect(app.seleccionada()).toBe(existente.clave);
+
+    app.nuevo();
+    app.cliente.clave = 'nueva';
+    app.buscarClave();
+    expect(app.seleccionada()).toBeNull();
+    expect(app.cliente).toEqual({ clave: 'nueva', nombre: '', fechaNacimiento: '' });
+  });
 });
